@@ -103,7 +103,19 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
 
     @Override
     public void deleteStaff(String id) throws SQLException {
-        System.out.println(id);
+        if(findStaffById(id)!=null){
+            try (PreparedStatement preparedStatement = con.prepareStatement(
+                "DELETE FROM Staff WHERE id = ? ;")) {
+
+            preparedStatement.setString(1, id);
+
+            preparedStatement.executeQuery();
+        }
+            return;
+        }else{
+            System.out.println("No Record with id:" + id + ". Nothing deleted.");
+            return;
+        }
     }
     /* ===============================HELPER METHODS================================================= */
     private Staff findStaffById(String id) throws SQLException{

@@ -75,6 +75,10 @@ public class ConsoleUserInterface extends UserInterface {
 
         System.out.print("ID: ");
         String id = scanner.next();
+        if (!isInteger(id)) {
+            System.out.println("Invalid address format. Please enter a valid address.");
+            return null;
+        }
 
         System.out.print("Last Name: ");
         String lastName = scanner.next();
@@ -86,10 +90,15 @@ public class ConsoleUserInterface extends UserInterface {
         char mi = scanner.next().charAt(0);
 
         System.out.print("Age: ");
-        int age = scanner.nextInt();
+        String ageStr = scanner.next();
+        if (!isInteger(id)) {
+            System.out.println("Invalid address format. Please enter a valid address.");
+            return null;
+        }
+        int age = Integer.parseInt(ageStr);
 
         System.out.print("Address: ");
-        String address = scanner.nextLine();
+        String address = scanner.next();
         if (!isValidAddress(address)) {
             System.out.println("Invalid address format. Please enter a valid address.");
             return null;
@@ -136,5 +145,15 @@ public class ConsoleUserInterface extends UserInterface {
         // Simple telephone number validation: checks if it contains only digits and has a length of 10
         return phoneNumber.matches("\\d{10}");
     }
-    
+    public boolean isInteger(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 }
