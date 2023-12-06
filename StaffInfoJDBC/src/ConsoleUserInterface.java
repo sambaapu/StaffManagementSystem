@@ -68,8 +68,8 @@ public class ConsoleUserInterface extends UserInterface {
     private void printStaffList(List<Staff> staffList) {
         int idx = 0;
         while(idx<staffList.size()){
-            Staff staff = staffList.get(idx++);
-            System.out.println("Row 1:");
+            Staff staff = staffList.get(idx);
+            System.out.println("Row " + (idx++) + ":");
             System.out.println(staff.toString());
         }
     }

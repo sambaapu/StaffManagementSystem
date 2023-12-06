@@ -106,10 +106,19 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
         StaffList.staffList.remove(staff);
         StaffList.staffMap.remove(id);
         try {
-            Method methodToCall = Staff.class.getMethod("set" + col.substring(0, 1).toUpperCase() + col.substring(1)+"("+colVal+")"); //
-            methodToCall.invoke(staff);
+            String setterStr = "set" + col.substring(0, 1).toUpperCase() + col.substring(1);
+            System.out.println(setterStr);
+            Method methodToCall;
+            if(col.equals("age")){
+                methodToCall = Staff.class.getMethod(setterStr, Integer.TYPE);
+                methodToCall.invoke(staff,Integer.parseInt(colVal));
+            }else{
+                methodToCall = Staff.class.getMethod(setterStr, String.class);
+                methodToCall.invoke(staff,colVal);
+            }
+            
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            System.out.println("Invalid input or method not found. Please enter 'age' or 'ID'.");
+            System.out.println("Invalid input or method not found. Setter method not found for "+col);
         }
         StaffList.staffMap.put(staff.getId(),staff);
         StaffList.staffList.add(staff);
@@ -127,6 +136,9 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
             preparedStatement.executeUpdate();
             }
         System.out.println("Record Deleted successfully.");
+        Staff staff = StaffList.staffMap.get(id);
+        StaffList.staffList.remove(staff);
+        StaffList.staffMap.remove(id);
         return;
         }else{
             System.out.println("No Record with id:" + id + ". Nothing deleted.");
