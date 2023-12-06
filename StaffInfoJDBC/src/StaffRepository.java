@@ -9,7 +9,7 @@ public interface StaffRepository {
 
     void insertStaff(Staff staff) throws SQLException;
 
-    void updateStaff(Staff staff) throws SQLException;
+    void updateStaff(String col, String colVal, String id) throws SQLException;
 
     void deleteStaff(String id) throws SQLException;
 }

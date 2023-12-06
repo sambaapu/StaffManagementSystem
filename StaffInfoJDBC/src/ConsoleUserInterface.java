@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
@@ -42,11 +43,14 @@ public class ConsoleUserInterface extends UserInterface {
                 }
                 break;
             case 4:
-                System.out.print("Enter ID to view: ");
+                System.out.print("Enter ID to update: ");
                 id = scanner.next();
-                staff = readStaff();
-                if(staff != null){
-                    staffRepository.updateStaff(staff);
+                System.out.print("Enter column name to update: ");
+                String col = scanner.next();
+                if(isColumn(col)){
+                    System.out.print("Enter column value to update: ");
+                    String colVal = scanner.next();
+                    staffRepository.updateStaff(col, colVal, id);
                 }
                 break;
             case 5:
@@ -150,10 +154,29 @@ public class ConsoleUserInterface extends UserInterface {
             return false;
         }
         try {
-            double d = Integer.parseInt(strNum);
+            Integer.parseInt(strNum);
         } catch (NumberFormatException nfe) {
             return false;
         }
         return true;
+    }
+    public boolean isColumn(String column){
+        HashSet<String> columns = new HashSet<String>();
+        columns.add("id");
+        columns.add("lastName");
+        columns.add("firstName");
+        columns.add("mi");
+        columns.add("age");
+        columns.add("address");
+        columns.add("city");
+        columns.add("state");
+        columns.add("telephone");
+        columns.add("email");
+        if (columns.contains(column)){
+            return true;
+        }else{
+            System.out.println("Column not found. Columns in Staff table are: " + columns);
+            return false;
+        }
     }
 }

@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class StaffRepositoryMySQLDB implements StaffRepository {
@@ -20,6 +21,7 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
 
     @Override
     public List<Staff> getAllStaff() throws SQLException {
+        List<Staff> newStaffList = new ArrayList<>();
         try {
             Statement statement = con.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM Staff");
@@ -37,13 +39,13 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
                         resultSet.getString("telephone"),
                         resultSet.getString("email")
                 );
-                staffList.add(staff);
+                newStaffList.add(staff);
             }
-            Collections.sort(staffList);
+            Collections.sort(staffList, Comparator.comparingInt(Staff::getAge));
         } catch (SQLException e){
             e.printStackTrace();
         }
-        return staffList;
+        return staffList= newStaffList;
     }
 
     @Override
@@ -81,20 +83,16 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
     }
 
     @Override
-    public void updateStaff(Staff staff) throws SQLException {
+    public void updateStaff(String col, String colVal, String id) throws SQLException {
         try (PreparedStatement preparedStatement = con.prepareStatement(
-                "INSERT INTO Staff VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-
-            preparedStatement.setString(1, staff.getId());
-            preparedStatement.setString(2, staff.getLastName());
-            preparedStatement.setString(3, staff.getFirstName());
-            preparedStatement.setString(4, String.valueOf(staff.getMi()));
-            preparedStatement.setInt(5, staff.getAge());
-            preparedStatement.setString(6, staff.getAddress());
-            preparedStatement.setString(7, staff.getCity());
-            preparedStatement.setString(8, staff.getState());
-            preparedStatement.setString(9, staff.getTelephone());
-            preparedStatement.setString(10, staff.getEmail());
+                "UPDATE Staff SET " + col + " = ? WHERE id = ?")) 
+        {
+            if(col.equals("age")){
+                 preparedStatement.setInt(1, Integer.parseInt(colVal));
+            }else{
+                preparedStatement.setString(1, colVal);
+            }
+            preparedStatement.setString(2, id);
 
             preparedStatement.executeUpdate();
         }
@@ -109,7 +107,7 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
 
             preparedStatement.setString(1, id);
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
         }
             return;
         }else{
