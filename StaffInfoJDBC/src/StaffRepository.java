@@ -1,9 +1,8 @@
 import java.sql.*;
-import java.util.List;
 
 // Interface for the data access layer
 public interface StaffRepository {
-    List<Staff> getAllStaff() throws SQLException;
+    void getAllStaff() throws SQLException;
 
     Staff getStaffById(String id) throws SQLException;
 

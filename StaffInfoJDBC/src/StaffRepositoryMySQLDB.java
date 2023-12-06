@@ -1,15 +1,16 @@
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
 
 public class StaffRepositoryMySQLDB implements StaffRepository {
     private static final String DB_URL = "jdbc:mysql://localhost/StaffInfo";
     private static final String USER = "root";
     private static final String PASSWORD = "mahasena";
     private Connection con;
-    private static List<Staff> staffList = new ArrayList<>();
 
     public StaffRepositoryMySQLDB(){
         try {
@@ -20,8 +21,8 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
     }
 
     @Override
-    public List<Staff> getAllStaff() throws SQLException {
-        List<Staff> newStaffList = new ArrayList<>();
+    public void getAllStaff() throws SQLException {
+        HashMap<String, Staff> newStaffMap = new HashMap<>();
         try {
             Statement statement = con.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM Staff");
@@ -39,13 +40,14 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
                         resultSet.getString("telephone"),
                         resultSet.getString("email")
                 );
-                newStaffList.add(staff);
+                newStaffMap.put(staff.getId(),staff);
             }
-            Collections.sort(staffList, Comparator.comparingInt(Staff::getAge));
         } catch (SQLException e){
             e.printStackTrace();
         }
-        return staffList= newStaffList;
+        StaffList.staffMap = newStaffMap;
+        StaffList.staffList = new ArrayList<>(newStaffMap.values());
+        sortStaffList();
     }
 
     @Override
@@ -80,6 +82,9 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
             preparedStatement.executeUpdate();
         }
         System.out.println("Record inserted successfully.");
+        StaffList.staffList.add(staff);
+        StaffList.staffMap.put(staff.getId(),staff);
+        sortStaffList();
     }
 
     @Override
@@ -96,7 +101,19 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
 
             preparedStatement.executeUpdate();
         }
-        System.out.println("Record inserted successfully.");
+        System.out.println("Record Updated successfully.");
+        Staff staff = StaffList.staffMap.get(id);
+        StaffList.staffList.remove(staff);
+        StaffList.staffMap.remove(id);
+        try {
+            Method methodToCall = Staff.class.getMethod("set" + col.substring(0, 1).toUpperCase() + col.substring(1)+"("+colVal+")"); //
+            methodToCall.invoke(staff);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            System.out.println("Invalid input or method not found. Please enter 'age' or 'ID'.");
+        }
+        StaffList.staffMap.put(staff.getId(),staff);
+        StaffList.staffList.add(staff);
+        sortStaffList();
     }
 
     @Override
@@ -108,8 +125,9 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
             preparedStatement.setString(1, id);
 
             preparedStatement.executeUpdate();
-        }
-            return;
+            }
+        System.out.println("Record Deleted successfully.");
+        return;
         }else{
             System.out.println("No Record with id:" + id + ". Nothing deleted.");
             return;
@@ -147,5 +165,8 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
             if(resultSet.next()) return true;
             return false;
         }
+    }
+    private void sortStaffList(){
+        Collections.sort(StaffList.staffList, Comparator.comparingInt(Staff::getAge));
     }
 }

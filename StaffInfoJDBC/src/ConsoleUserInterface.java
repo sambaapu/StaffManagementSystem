@@ -33,8 +33,7 @@ public class ConsoleUserInterface extends UserInterface {
                 System.out.println(staffRepository.getStaffById(id).toString());
                 break;
             case 2:
-                List<Staff> staffList = staffRepository.getAllStaff();
-                printStaffList(staffList);
+                printStaffList(StaffList.staffList);
                 break;
             case 3:
                 staff = readStaff();
@@ -145,30 +144,9 @@ public class ConsoleUserInterface extends UserInterface {
     }
 
     /*================================================Input Validation=============================================================== */
-    private static boolean isValidEmail(String email) {
-        // Simple email validation using a regular expression
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        return email.matches(emailRegex);
-    }
-
-    private static boolean isValidPhoneNumber(String phoneNumber) {
-        // Simple telephone number validation: checks if it contains only digits and has a length of 10
-        return phoneNumber.matches("\\d{10}");
-    }
-    public boolean isInteger(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            Integer.parseInt(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
-    }
+    
     private boolean updateDataValidation(String column, String colVal){
         HashSet<String> columns = new HashSet<String>();
-        columns.add("id");
         columns.add("lastName");
         columns.add("firstName");
         columns.add("mi");
@@ -180,12 +158,6 @@ public class ConsoleUserInterface extends UserInterface {
         columns.add("email");
         if (columns.contains(column)){
             switch(column){
-                case "id":
-                    if (!isInteger(colVal)) {
-                        System.out.println("Invalid value for id. Enter integer value");
-                        return false;
-                    }
-                    break;
                 case "lastName":
                     if (!validateName(colVal)) {
                         return false;
@@ -237,10 +209,34 @@ public class ConsoleUserInterface extends UserInterface {
             }
             return true;
         }else{
-            System.out.println("Column not found. Columns in Staff table are: " + columns);
+            System.out.println("ID can not be updated. Column not found. Columns in Staff table are: " + columns);
             return false;
         }
     }
+
+    private static boolean isValidEmail(String email) {
+        // Simple email validation using a regular expression
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return email.matches(emailRegex);
+    }
+
+    private static boolean isValidPhoneNumber(String phoneNumber) {
+        // Simple telephone number validation: checks if it contains only digits and has a length of 10
+        return phoneNumber.matches("\\d{10}");
+    }
+
+    public boolean isInteger(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
     private boolean validateID(String id){
         if (!isInteger(id) || id.length() > 9) {
             System.out.println("Invalid value for ID. Enter integer value and length should be less than 9 digit.");
@@ -248,6 +244,7 @@ public class ConsoleUserInterface extends UserInterface {
         }
         return true;
     }
+
     private boolean validateName(String name){
         if (!name.matches("[a-zA-Z]+") || name.length() > 15) {
             System.out.println("Invalid value for Name. Enter string value and length should be less than 15 characters");
@@ -255,6 +252,7 @@ public class ConsoleUserInterface extends UserInterface {
         }
         return true;
     }
+
     private boolean validateMi(String mi){
         if ( !mi.matches("[a-zA-Z]") || mi.length() > 1) {
             System.out.println("Invalid value for mi. Enter single alphabetic character");
@@ -262,6 +260,7 @@ public class ConsoleUserInterface extends UserInterface {
         }
         return true;
     }
+
     private boolean validateAddress(String address){
         if ( !address.matches("^[a-zA-Z0-9\\s]+$") || address.length() > 20) {
             System.out.println("Invalid Address. Enter address with length 20 or less");
@@ -269,13 +268,15 @@ public class ConsoleUserInterface extends UserInterface {
         }
         return true;
     }
+
     private boolean validateCity(String city){
-        if (!city.matches("[a-zA-Z]+") || city.length() > 15) {
+        if (!city.matches("[a-zA-Z\\s]+") || city.length() > 15) {
             System.out.println("Invalid value for City. Enter string value and length should be 20 characters or less");
             return false;
         }
         return true;
     }
+
     private boolean validateState(String state){
         if (!state.matches("[A-Z]+") || state.length() > 2) {
             System.out.println("Invalid value for Name. Capital letters only. Length should be 2 characters or less");
