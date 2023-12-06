@@ -107,8 +107,9 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
     }
     /* ===============================HELPER METHODS================================================= */
     private Staff findStaffById(String id) throws SQLException{
-        try(Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM Staff WHERE id = " + id)){
+        try(PreparedStatement preparedStatement = con.prepareStatement("SELECT * FROM Staff WHERE id = ?");){
+                preparedStatement.setString(1, id);
+                ResultSet resultSet = preparedStatement.executeQuery();
                 if(resultSet.next()){
                     Staff staff = new Staff(
                         resultSet.getString("id"),
@@ -128,11 +129,11 @@ public class StaffRepositoryMySQLDB implements StaffRepository {
             return null;
     }
     public boolean isDuplicateRecord (String firstName, String lastName, int age) throws SQLException{
-        try(
-            Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM Staff WHERE firstName = " + firstName
-                                        + " AND lastName = " + lastName  + " AND age = " + age))
-        {
+        try(PreparedStatement preparedStatement = con.prepareStatement("SELECT * FROM Staff WHERE firstName = ? AND lastName = ? AND age = ?");){
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setInt(3, age);
+            ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) return true;
             return false;
         }

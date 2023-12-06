@@ -10,7 +10,7 @@ public class UserInput {
     public static Scanner getInstance() {
         if (scanner == null) {
             // Create a new Scanner instance if it doesn't exist
-            scanner = new Scanner(System.in);
+            scanner = new Scanner(System.in).useDelimiter("\n");
         }
         return scanner;
     }

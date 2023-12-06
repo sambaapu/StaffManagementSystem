@@ -37,13 +37,17 @@ public class ConsoleUserInterface extends UserInterface {
                 break;
             case 3:
                 staff = readStaff();
-                staffRepository.insertStaff(staff);
+                if(staff != null){
+                    staffRepository.insertStaff(staff);
+                }
                 break;
             case 4:
                 System.out.print("Enter ID to view: ");
                 id = scanner.next();
                 staff = readStaff();
-                staffRepository.updateStaff(staff);
+                if(staff != null){
+                    staffRepository.updateStaff(staff);
+                }
                 break;
             case 5:
                 System.out.print("Enter ID to delete: ");
@@ -85,7 +89,11 @@ public class ConsoleUserInterface extends UserInterface {
         int age = scanner.nextInt();
 
         System.out.print("Address: ");
-        String address = scanner.next();
+        String address = scanner.nextLine();
+        if (!isValidAddress(address)) {
+            System.out.println("Invalid address format. Please enter a valid address.");
+            return null;
+        }
 
         System.out.print("City: ");
         String city = scanner.next();
@@ -95,12 +103,38 @@ public class ConsoleUserInterface extends UserInterface {
 
         System.out.print("Telephone: ");
         String telephone = scanner.next();
-
+        if (!isValidPhoneNumber(telephone)) {
+            System.out.println("Invalid telephone number. Please enter a valid 10-digit phone number.");
+            return null;
+        }
         System.out.print("Email: ");
         String email = scanner.next();
+        if (!isValidEmail(email)) {
+            System.out.println("Invalid email format. Please enter a valid email address.");
+            return null;
+        }
 
         Staff newStaff = new Staff(id, lastName, firstName, mi, age, address, city, state, telephone, email);
         return newStaff;
+    }
+
+    /*================================================Input Validation=============================================================== */
+    private static boolean isValidEmail(String email) {
+        // Simple email validation using a regular expression
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return email.matches(emailRegex);
+    }
+    
+    private static boolean isValidAddress(String address) {
+        // Simple address validation using a regular expression
+        // You may need a more complex validation based on your requirements
+        String addressRegex = "^[a-zA-Z0-9\\s]+(?:\\s[a-zA-Z0-9]+)*$";
+        return address.matches(addressRegex);
+    }
+
+    private static boolean isValidPhoneNumber(String phoneNumber) {
+        // Simple telephone number validation: checks if it contains only digits and has a length of 10
+        return phoneNumber.matches("\\d{10}");
     }
     
 }
